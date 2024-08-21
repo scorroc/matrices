@@ -1,5 +1,21 @@
 from matrices import(
     create_matrix,
+    create_zero_matrix,
+    create_diagonal_matrix,
+    create_identity_matrix,
     print_matrix,
-    get_position
+    get_position,
+    get_column,
+    get_row,
+    get_main_diagonal,
+    get_matrix_size,
+    equals,
+    transpose_matrix,
+    matrix_sum,
+    scalar_multiplication,
+    matrix_multiplication,
+    matrix_determinant,
+    delete_position,
+    adjugate_matrix,
+    inverse_matrix
 )

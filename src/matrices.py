@@ -112,7 +112,7 @@ def scalar_multiplication(matrix1,num):
     for i in range(rowNum):
         row = []
         for j in range(colNum):
-            row.append(matrix1[i][j]*num)
+            row.append(float("{:.2f}".format(matrix1[i][j]*num)))
         result.append(row)
     return result
 
@@ -133,18 +133,78 @@ def matrix_multiplication(matrix1, matrix2):
         
     return resultMatrix
 
-matriz = create_matrix(3,3,[1,2,3,4,5,6,7,8,9])
+def matrix_determinant(matrix):
+    newMatrix = matrix
+    determinant = 0
 
-matriz1 = create_matrix(2,3,[4,3,2,1,2,3])
+    #Si la matriz es de 2x2, no tenemos que agregar filas, por lo que calculamos directamente la determinante
+    if((2,2) == get_matrix_size(matrix)):
+        return matrix[0][0]*matrix[1][1] - (matrix[1][0]*matrix[0][1])
 
-matriz2 = create_matrix(3,2,[0,1,1,2,-1,0])
 
-print("Matriz 1")
-print_matrix(matriz1)
+    #Agregamos las primeras filas al final, para poder obtener las diagonales necesarias para calcular el determinante
+    for i in range(len(matrix)-1):
+        newMatrix.append(matrix[i])
+    
+    #Calculamos la suma de los productos de las diagonales que van hacia la derecha
+    for i in range(len(matrix[0])):
+        result = 1
+        for j in range(len(matrix[0])):
+            result = result*newMatrix[i][j]
+            i = i+1
+        determinant = determinant + result
 
-print("Matriz2")
-print_matrix(matriz2)
+    #Calculamos la suma de los productos de las diagonales que van hacia la izquierda
+    for i in range(len(matrix[0])):
+        result = 1
+        #Recorremos la fila de manera inversa, para poder encontrar la diagonal empezando por la derecha
+        for j in range(len(matrix[0])-1, -1, -1):
+            result = result*newMatrix[i][j]
+            i = i+1
+        determinant = determinant - result
 
-print("Resultado")
-res = matrix_multiplication(matriz2,matriz1)
-print_matrix(res)
+    return determinant
+
+def delete_position(matrix,row,column):
+    newMatrix = []
+    for i in range(len(matrix[0])):
+        newRow = []
+        for j in range(len(matrix)):
+            if( i != row):
+                if(j!=column):
+                    newRow.append(matrix[i][j])
+        if(newRow != []):
+            newMatrix.append(newRow)
+
+    return newMatrix
+
+def adjugate_matrix(matrix):
+    sign = 1
+    adjugateMatrix = []
+    for i in range(len(matrix)):
+        newRow = []
+        for j in range(len(matrix)):
+            auxMatrix = delete_position(matrix,i,j)
+            newRow.append(sign*matrix_determinant(auxMatrix))
+            sign = sign*-1
+        adjugateMatrix.append(newRow)
+    return adjugateMatrix
+
+def inverse_matrix(matrix):
+    adjugate = adjugate_matrix(matrix)
+
+    determinant = matrix_determinant(matrix)
+
+    adjugateTransposed = transpose_matrix(adjugate)
+
+    inverse = scalar_multiplication(adjugateTransposed,1/determinant)
+
+    return inverse
+
+matriz = create_matrix(3,3,[3,4,-1,2,0,1,1,3,-2])
+matriz2 = create_matrix(3,3,[-3,2,0,1,-1,2,-2,1,3])
+
+inverse = inverse_matrix(matriz)
+
+print("Inverse matrix = ")
+print_matrix(inverse)
